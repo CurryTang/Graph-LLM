@@ -408,7 +408,7 @@ def get_tf_idf_by_texts(texts, known_mask, test_mask, max_features = 1433, use_t
 def get_word2vec(raw_texts):
     raw_text = [[ x for x in line.lower().split(' ') if x.isalpha()] for line in raw_texts]
     w2v_path = load_secret()['word2vec']['path']
-    word2vec = KeyedVectors.load_word2vec_format(datapath(), binary = True)
+    word2vec = KeyedVectors.load_word2vec_format(w2v_path, binary = True)
     vecs = []
     for sentence in raw_text:
         tokens = [x for x in sentence if x.isalpha()]
