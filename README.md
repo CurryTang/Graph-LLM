@@ -5,6 +5,9 @@
 
 This is the official code repository for our paper [Exploring the Potential of Large Language Models (LLMs) in Learning on Graphs](https://arxiv.org/abs/2307.03393)
 
+Check out our new project here: [Label-free Node Classification on Graphs with Large Language Models (LLMS)
+](https://github.com/CurryTang/LLMGNN) 
+
 ## Citation
 ```
 @article{Chen2023ExploringTP,
