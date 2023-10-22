@@ -160,3 +160,27 @@ Just run
 ``` bash
 python3 ego_graph.py
 ```
+
+
+Here's a polished version of the provided content with the Markdown format unchanged:
+
+## 3. (UPDATE) Further Experiments on OOD & Prompts
+
+In two recent studies titled [CAN LLMS EFFECTIVELY LEVERAGE GRAPH STRUCTURAL INFORMATION: WHEN AND WHY](https://arxiv.org/pdf/2309.16595.pdf) and [Explanations as Features: LLM-Based Features for Text-Attributed Graphs](https://arxiv.org/pdf/2305.19523), researchers probed a specific prompt tailored for the Arxiv dataset containing data from post-2023, data which ChatGPT's pre-training corpus doesn't cover. Notably, the results showed no decline in performance compared to the original dataset. This intriguing outcome prompts us to delve deeper into creating efficacious prompts across varied domains.
+
+Out-of-distribution (OOD) generalization, commonly known as Graph OOD, is a fervent area of discussion. Recent benchmarks, such as [GOOD](https://github.com/divelab/GOOD/tree/GOODv1/GOOD), indicate that GNNs don't fare well during structural and feature shifts. We embarked on an experiment using the Arxiv dataset to assess the potential of LLMs-as-Predictors, leveraging a prompt from [Explanations as Features: LLM-Based Features for Text-Attributed Graphs](https://arxiv.org/pdf/2305.19523), which exhibited superior performance.
+
+|                  	| All avg      	| Val   	| Test     	| Best baseline (test) 	|
+|------------------	|--------------	|-------	|----------	|----------------------	|
+| concept degree   	| 73.91 ± 0.63 	| 73.01 	| 72.79    	| 63.00                	|
+| covariate degree 	| 75.75 ± 3.6  	| 70.23 	| 68.21    	| 59.08                	|
+| concept time     	| 74.29 ± 0.96 	| 72.66 	| 71.98    	| 67.45                	|
+| covariate time   	| 72.69 ± 1.53 	| 74.28 	| 74.37    	| 71.34                	|
+
+* **Concept-shift**: Where P(Y|X) varies, yet its construct remains anchored to covariate-shift by adjusting the ratios in each domain.
+* **Covariate-shift**: While P(X) shifts, P(Y|X) remains consistent.
+
+For the covariate shift, there are configurations of 10/1/1 environments (train/val/test), and for the concept shift, it's 3/1/1 (train/val/test). The term `All avg` represents the mean performance across all environments.
+
+One discernible merit of using LLMs-as-Predictors is their heightened resilience to OOD shifts.
+
