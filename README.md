@@ -162,7 +162,6 @@ python3 ego_graph.py
 ```
 
 
-Here's a polished version of the provided content with the Markdown format unchanged:
 
 ## 3. (UPDATE) Further Experiments on OOD & Prompts
 
