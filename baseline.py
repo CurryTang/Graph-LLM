@@ -96,8 +96,7 @@ def train_pipeline(seeds, args, epoch, data, writer, need_train, mode="main"):
     early_stop_accum = 0
     val_result_acc = []
     out_res = []
-    best_val = 0
-
+    
     if args.inductive:
         data = to_inductive(data)
     if mode == "main":
@@ -105,6 +104,7 @@ def train_pipeline(seeds, args, epoch, data, writer, need_train, mode="main"):
     else:
         split_num = args.sweep_split
     for i, seed in enumerate(seeds):
+        best_val = 0
         set_seed_config(seed)
         model = get_model(args).to(device)
         optimizer, scheduler = get_optimizer(args, model)
