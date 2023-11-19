@@ -44,6 +44,7 @@ from transformers import AutoTokenizer, AutoModel
 from torch import Tensor
 import google.generativeai as palm
 import yaml
+import ipdb
 
 
 
@@ -179,10 +180,13 @@ def get_dataset(seed_num, dataset, split, data_format, low_label_test):
             new_test_masks.append(te_mask)
         elif split == 'pl_random':
             num_classes = data.y.max().item() + 1
+            # total_num = data.x.shape[0]
+            # total_label_num = 20 * num_classes
+            # train_num = 20 * num_classes * 3 // 4
+            # val_num = total_label_num - train_num
             total_num = data.x.shape[0]
-            total_label_num = 20 * num_classes
-            train_num = 20 * num_classes * 3 // 4
-            val_num = total_label_num - train_num
+            train_num = int(total_num * 0.6)
+            val_num = int(total_num * 0.2)
             test_num = int(total_num * 0.2)
             y_copy = torch.tensor(data.y)
             t_mask, val_mask, test_mask = generate_random_mask(data.x.shape[0], train_num, val_num, test_num)
@@ -332,19 +336,19 @@ def generate_random_mask(total_node_number, train_num, val_num, test_num = -1):
 
 
 
-# def get_label_cat_mapping(file_path = 'data/ogbn-arxiv/ogbn_arxiv/mapping/labelidx2arxivcategeory.csv.gz'):
-#     with gzip.open(file_path, 'rt', encoding='utf-8') as file:
-#         df = pd.read_csv(file)
-#     rows = df.values
-#     mapping = {row[1]: row[0] for row in rows}
-#     return mapping, df['arxiv category'].values.tolist()
+def get_label_cat_mapping(file_path = 'data/ogbn-arxiv/ogbn_arxiv/mapping/labelidx2arxivcategeory.csv.gz'):
+    with gzip.open(file_path, 'rt', encoding='utf-8') as file:
+        df = pd.read_csv(file)
+    rows = df.values
+    mapping = {row[1]: row[0] for row in rows}
+    return mapping, df['arxiv category'].values.tolist()
 
-# def get_paper_id_mapping(file_path = 'data/ogbn-arxiv/ogbn_arxiv/mapping/nodeidx2paperid.csv.gz'):
-#     with gzip.open(file_path, 'rt', encoding='utf-8') as file:
-#         df = pd.read_csv(file)
-#     rows = df.values 
-#     mapping = {row[1]: row[0] for row in rows}
-#     return mapping, df['paper id'].values.tolist()
+def get_paper_id_mapping(file_path = 'data/ogbn-arxiv/ogbn_arxiv/mapping/nodeidx2paperid.csv.gz'):
+    with gzip.open(file_path, 'rt', encoding='utf-8') as file:
+        df = pd.read_csv(file)
+    rows = df.values 
+    mapping = {row[1]: row[0] for row in rows}
+    return mapping, df['paper id'].values.tolist()
 
 
 
@@ -424,43 +428,43 @@ def get_word2vec(raw_texts):
 
 
 
-# def ogb_arxiv_dataset():
-#     arxiv_df = pd.read_csv("./preprocessed_data/ogb_arxiv.csv")
-#     data = ogb_data(False, None).cpu()
-#     data.paper_id = arxiv_df['id'].tolist()
-#     data.title = arxiv_df['title'].tolist()
-#     data.abs = arxiv_df['abstract'].tolist()
-#     data.category_names = arxiv_df['category_name'].tolist()
-#     data.raw_texts = [x + " " + y for x, y in zip(data.title, data.abs)]
-#     _, mapping = get_label_cat_mapping('./data/ogbn-arxiv/ogbn_arxiv/mapping/labelidx2arxivcategeory.csv.gz')
-#     data.label_names = mapping
-#     torch.save(data, "./preprocessed_data/arxiv_public_w2v.pt")
-#     return data
+def ogb_arxiv_dataset():
+    arxiv_df = pd.read_csv("./preprocessed_data/ogb_arxiv.csv")
+    data = ogb_data(False, None).cpu()
+    data.paper_id = arxiv_df['id'].tolist()
+    data.title = arxiv_df['title'].tolist()
+    data.abs = arxiv_df['abstract'].tolist()
+    data.category_names = arxiv_df['category_name'].tolist()
+    data.raw_texts = [x + " " + y for x, y in zip(data.title, data.abs)]
+    _, mapping = get_label_cat_mapping('./data/ogbn-arxiv/ogbn_arxiv/mapping/labelidx2arxivcategeory.csv.gz')
+    data.label_names = mapping
+    torch.save(data, "./preprocessed_data/arxiv_public_w2v.pt")
+    return data
 
 
-# def ogb_products_dataset():
-#     dataset = get_ogbn_dataset("ogbn-products", False, transform=None)
-#     data = dataset[0]
-#     idx_mapping, content_mapping = get_raw_dataset()
-#     idx_mapping_list = idx_mapping.items()
-#     idx_mapping_list = sorted(idx_mapping_list, key=lambda x:x[0])
-#     prompt_list = []
-#     for _, value in idx_mapping_list:
-#         content = content_mapping[value]
-#         title, abstract = content
-#         title = title.strip()
-#         abstract = abstract.strip()
-#         prompt = f"{title} {abstract}"
-#         prompt_list.append(prompt)
-#     data.raw_texts = prompt_list
-#     label2cat = "./raw_data/ogbn_products/mapping/labelidx2productcategory.csv"
-#     label2cat_df = pd.read_csv(label2cat)
-#     label_names = label2cat_df['product category'].to_list()
-#     label_names = [x if not pd.isna(x) else f"label {i + 1}" for i, x in enumerate(label_names)]
-#     data.label_names = label_names 
-#     data.category_names = [label_names[i] for i in data.y.reshape(-1).tolist()]
-#     torch.save(data, "./ogb/preprocessed_data/products_public_bow.pt")
-#     return data
+def ogb_products_dataset():
+    dataset = get_ogbn_dataset("ogbn-products", False, transform=None)
+    data = dataset[0]
+    idx_mapping, content_mapping = get_raw_dataset()
+    idx_mapping_list = idx_mapping.items()
+    idx_mapping_list = sorted(idx_mapping_list, key=lambda x:x[0])
+    prompt_list = []
+    for _, value in idx_mapping_list:
+        content = content_mapping[value]
+        title, abstract = content
+        title = title.strip()
+        abstract = abstract.strip()
+        prompt = f"{title} {abstract}"
+        prompt_list.append(prompt)
+    data.raw_texts = prompt_list
+    label2cat = "./raw_data/ogbn_products/mapping/labelidx2productcategory.csv"
+    label2cat_df = pd.read_csv(label2cat)
+    label_names = label2cat_df['product category'].to_list()
+    label_names = [x if not pd.isna(x) else f"label {i + 1}" for i, x in enumerate(label_names)]
+    data.label_names = label_names 
+    data.category_names = [label_names[i] for i in data.y.reshape(-1).tolist()]
+    torch.save(data, "./ogb/preprocessed_data/products_public_bow.pt")
+    return data
 
 
 def parse_pubmed(path):
@@ -584,9 +588,9 @@ def pubmed_to_graph(path, split = "fixed", embedding_type = "original"):
     return data
 
 
-def citeseer_to_graph(citeseer_path = './raw_data/CiteSeer-Orig', split = "public", embedding_type = "original"):
+def citeseer_to_graph(citeseer_path = '/egr/research-dselab/chenzh85/toy_experiments/ogb/raw_data/CiteSeer-Orig', split = "public", embedding_type = "original"):
     data = Data()
-    citeseer_content = osp.join(citeseer_path, "citeseer_texts.txt")
+    citeseer_content = osp.join(citeseer_path, "citeseer_texts2.txt")
     citeseer_relation = osp.join(citeseer_path, "citeseer.cites")
     idx_to_row_mapping = {}
     category_name = []
@@ -626,9 +630,12 @@ def citeseer_to_graph(citeseer_path = './raw_data/CiteSeer-Orig', split = "publi
                 continue
             if head != tail:
                 row.append(head)
+                col.append(tail)
+                # col.append(head)
+                # row.append(tail)
                 col.append(head)
                 row.append(tail)
-                col.append(tail)
+                # ipdb.set_trace()
     data.edge_index = torch.tensor([row, col])    
     data.raw_texts = texts 
     data.category_names = category_name
@@ -652,7 +659,7 @@ def citeseer_to_graph(citeseer_path = './raw_data/CiteSeer-Orig', split = "publi
         data.train_masks = [train_mask]
         data.val_masks = [val_mask]
         data.test_masks = [test_mask]
-    torch.save(data, f"./preprocessed_data/citeseer_{split}_{embedding_type}.pt")
+    torch.save(data, f"/egr/research-dselab/chenzh85/toy_experiments/ogb/preprocessed_data/new/citeseer2_{split}_{embedding_type}.pt")
     return data
 
 
@@ -755,9 +762,9 @@ def average_pool(last_hidden_states: Tensor,
 def batched_data(inputs, batch_size):
     return [inputs[i:i+batch_size] for i in range(0, len(inputs), batch_size)]
 
-def get_e5_large_embedding(texts, device, dataset_name = 'cora', batch_size = 64):
-    output_path = osp.join(OPENAI_OUT, dataset_name + "_e5_embedding.pt")
-    if osp.exists(output_path):
+def get_e5_large_embedding(texts, device, dataset_name = 'cora', batch_size = 64, cache_out = '/tmp', update = True):
+    output_path = osp.join(cache_out, dataset_name + "_e5_embedding.pt")
+    if osp.exists(output_path) and not update:
         return torch.load(output_path, map_location='cpu')
     texts = ["query: " + x for x in texts]
     tokenizer = AutoTokenizer.from_pretrained('intfloat/e5-large-v2', cache_dir='/tmp')
@@ -800,11 +807,11 @@ def get_google_embedding(texts, dataset_name = 'cora'):
 
 if __name__ == '__main__':
     #pubmed_to_graph("./raw_data/Pubmed-Diabetes/data/", split="fixed", embedding_type="original")
-    citeseer_to_graph("./raw_data/CiteSeer-Orig/", split="public", embedding_type="original")
+    citeseer_to_graph(split="fixed", embedding_type="sbert")
     #pubmed_to_graph("./raw_data/Pubmed-Diabetes/data/", split="fixed", embedding_type="sbert")
     #citeseer_to_graph("./raw_data/CiteSeer-Orig/", split="public", embedding_type="sbert")
     #pubmed_to_graph("./raw_data/Pubmed-Diabetes/data/", split="random", embedding_type="original")
-    citeseer_to_graph("./raw_data/CiteSeer-Orig/", split="random", embedding_type="original")
+    citeseer_to_graph(split="random", embedding_type="sbert")
     #pubmed_to_graph("./raw_data/Pubmed-Diabetes/data/", split="random", embedding_type="sbert")
     #citeseer_to_graph("./raw_data/CiteSeer-Orig/", split="random", embedding_type="sbert")
     # ogb_arxiv_dataset()
