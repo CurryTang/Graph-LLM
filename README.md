@@ -1,7 +1,7 @@
 # Exploring the Potential of Large Language Models (LLMs) in Learning on Graphs
 
 
-**UPDATE**: The pt file for Citeseer has some problems. Please use the latest version instead of the version inside small_data.zip
+**UPDATE**: The pt file for Citeseer has some problems. Please use the latest version `citeseer2` instead of the version inside small_data.zip. We use Graph Cleaner [Graph Cleaner](https://github.com/lywww/GraphCleaner/tree/master/case_studies) to fix wrong labels. 
 
 This is the official code repository for our paper [Exploring the Potential of Large Language Models (LLMs) in Learning on Graphs](https://arxiv.org/abs/2307.03393)
 
