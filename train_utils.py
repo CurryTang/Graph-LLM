@@ -50,6 +50,7 @@ def get_optimizer(args, model):
 
 
 def train(model, data, optimizer, loss_fn, train_mask, val_mask):
+    model.train()
     optimizer.zero_grad()
     preds = model(data)
     if len(data.y.shape) != 1:
