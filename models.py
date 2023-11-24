@@ -164,7 +164,10 @@ class GCN(torch.nn.Module):
             for _ in range(num_layers - 2):
                 self.convs.append(GCNConv(hidden_dimension, hidden_dimension, cached=False,
                              normalize=True))
-                self.norms.append(torch.nn.BatchNorm1d(hidden_dimension))
+                if norm:
+                    self.norms.append(torch.nn.BatchNorm1d(hidden_dimension))
+                else:
+                    self.norms.append(torch.nn.Identity())
 
             self.convs.append(GCNConv(hidden_dimension, num_classes, cached=False, normalize=True))
 
