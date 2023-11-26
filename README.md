@@ -5,6 +5,7 @@
 
 This is the official code repository for our paper [Exploring the Potential of Large Language Models (LLMs) in Learning on Graphs](https://arxiv.org/abs/2307.03393)
 
+We are developing a library [LLM4Graph](https://github.com/CurryTang/LLM4Graph) to support more LLM-GNN models, and more node-level, link-level, graph-level TAG datasets. 
 
 
 ## Introduction
